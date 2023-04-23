@@ -16,7 +16,7 @@ fn main() {
     // transpile
     let result_string = transpile::transpile::transpile(tokens);
 
-    println!("{:?}", result_string);
+    // println!("{:?}", result_string);
 
     // write to html
     fs::write("out.html", result_string.join("")).expect("cannot write to out.html");
