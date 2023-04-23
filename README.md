@@ -20,3 +20,6 @@
 
 ### marked text
 `some _ marked _ text`
+
+### images
+`.img Image.png`

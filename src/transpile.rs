@@ -2,6 +2,7 @@ pub mod transpile {
 
     // notelang tags
     const HEADLINE: &str = ".h"; // -> <h1>
+    const IMAGE: &str = ".img"; // -> <img>
 
     // notelang inline tags
     const BOLD: &str = "*"; // -> <strong>
@@ -12,6 +13,17 @@ pub mod transpile {
     /// transpile token-vector into valid html (as string-vec)
     pub fn transpile(tokens: Vec<String>) -> Vec<String> {
         let mut result_vec = tokens.to_vec();
+ 
+        // .h
+        result_vec = transpile_headlines(&result_vec);
+
+        // .img
+        result_vec = transpile_image(&result_vec);
+
+        // inline tags
+        result_vec = transpile_bold(&result_vec); // * (bold)
+        result_vec = transpile_italic(&result_vec); // # (italic)
+        result_vec = transpile_mark(&result_vec); // _ (mark)
 
         // define html structure
         result_vec.insert(0, "<!DOCTYPE html><html>".to_string());
@@ -21,15 +33,6 @@ pub mod transpile {
         result_vec.insert(3, "<body>".to_string());
         result_vec.push("</body>".to_string());
         result_vec.push("</html>".to_string());
-        
-
-        // .h
-        result_vec = transpile_headlines(&result_vec);
-
-        // inline tags
-        result_vec = transpile_bold(&result_vec); // * (bold)
-        result_vec = transpile_italic(&result_vec); // # (italic)
-        result_vec = transpile_mark(&result_vec); // _ (mark)
 
         return result_vec;
     }
@@ -48,6 +51,29 @@ pub mod transpile {
                 result_tokens[i] = "</h1>".to_string();
                 opened_tag = false;
             }
+        }
+
+        return result_tokens;
+    }
+
+    /// convert image tags to html tags
+    fn transpile_image(tokens: &Vec<String>) -> Vec<String> {
+        let mut result_tokens = Vec::with_capacity(tokens.capacity());
+
+        let mut i = 0;
+        while i < tokens.len()-2 {
+            if tokens[i] == IMAGE {
+                result_tokens.push(format!("<img src=\"{}\" alt=\"{}\">",tokens[i+2], tokens[i+2]));
+                i += 2;
+            }
+            else {
+                result_tokens.push(tokens[i].to_owned());
+            }
+            i+=1;
+        }
+
+        for j in i..tokens.len() {
+            result_tokens.push(tokens[j].to_owned());
         }
 
         return result_tokens;
