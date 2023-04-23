@@ -2,6 +2,7 @@ pub mod transpile {
 
     // notelang tags
     const HEADLINE: &str = ".h"; // -> <h1>
+    const TEXT: &str = ".p"; // -> <p>
     const IMAGE: &str = ".img"; // -> <img>
 
     // notelang inline tags
@@ -16,6 +17,9 @@ pub mod transpile {
  
         // .h
         result_vec = transpile_headlines(&result_vec);
+
+        // .p
+        result_vec = transpile_text(&result_vec);
 
         // .img
         result_vec = transpile_image(&result_vec);
@@ -49,6 +53,25 @@ pub mod transpile {
             }
             else if tokens.get(i).unwrap() == "\n" && opened_tag {
                 result_tokens[i] = "</h1>".to_string();
+                opened_tag = false;
+            }
+        }
+
+        return result_tokens;
+    }
+
+    /// convert text tags to html tags
+    fn transpile_text(tokens: &Vec<String>) -> Vec<String> {
+        let mut result_tokens = tokens.to_owned();
+
+        let mut opened_tag = false;
+        for i in 0..tokens.len() {
+            if tokens.get(i).unwrap() == TEXT {
+                result_tokens[i] = "<p>".to_string();
+                opened_tag = true;
+            }
+            else if tokens.get(i).unwrap() == "\n" && opened_tag {
+                result_tokens[i] = "</p>".to_string();
                 opened_tag = false;
             }
         }

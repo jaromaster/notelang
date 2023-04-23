@@ -9,6 +9,9 @@
 ## Basic tags
 ---
 
+### normal text
+`.p This is a normal line of text.`
+
 ### headlines
 `.h Some headline`
 
