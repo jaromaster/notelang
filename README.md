@@ -29,3 +29,13 @@
 
 ### hyperlinks
 `.link https://some-other/page.html`
+
+### tables
+```
+.tab
+.hrow ID,NAME,AGE
+.row 1,John,10
+.row 2,Peter,35
+.row 3,Toni,39
+.tab
+```

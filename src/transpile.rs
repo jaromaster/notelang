@@ -5,6 +5,9 @@ pub mod transpile {
     const TEXT: &str = ".p"; // -> <p>
     const IMAGE: &str = ".img"; // -> <img>
     const LINK: &str = ".link"; // -> <a href="...">
+    const TABLE: &str = ".tab"; // -> <table>
+    const ROW: &str = ".row"; // -> <tr> containing <td>
+    const HROW: &str = ".hrow"; // -> <tr> containing <th>
 
     // notelang inline tags
     const BOLD: &str = "*"; // -> <strong>
@@ -28,17 +31,22 @@ pub mod transpile {
         // .link
         result_vec = transpile_hyperlink(&result_vec);
 
+        // .table, .hrow, .row
+        result_vec = transpile_table(&result_vec);
+
         // inline tags
         result_vec = transpile_bold(&result_vec); // * (bold)
         result_vec = transpile_italic(&result_vec); // # (italic)
         result_vec = transpile_mark(&result_vec); // _ (mark)
 
         // define html structure
+        // TODO move to function
         result_vec.insert(0, "<!DOCTYPE html><html>".to_string());
         result_vec.insert(1, "<head>".to_string());
         // TODO maybe add title
-        result_vec.insert(2,"</head>".to_string());
-        result_vec.insert(3, "<body>".to_string());
+        result_vec.insert(2, generate_table_style());
+        result_vec.insert(3,"</head>".to_string());
+        result_vec.insert(4, "<body>".to_string());
         result_vec.push("</body>".to_string());
         result_vec.push("</html>".to_string());
 
@@ -202,4 +210,88 @@ pub mod transpile {
 
         return result_tokens;
     }
+
+    /// construct html table from table tags
+    fn transpile_table(tokens: &Vec<String>) -> Vec<String> {
+        let mut result_tokens = tokens.to_owned();
+        let delimiter = ",";
+
+        // table tags
+        let mut opened_tag = false;
+        for i in 0..tokens.len() {
+            if tokens.get(i).unwrap() == TABLE && !opened_tag {
+                result_tokens[i] = "<table>".to_string();
+                opened_tag = true;
+            }
+            else if tokens.get(i).unwrap() == TABLE && opened_tag {
+                result_tokens[i] = "</table>".to_string();
+                opened_tag = false;
+            }
+        }
+
+        if opened_tag {
+            panic!("invalid number of .tab tags (maybe not closing?)");
+        }
+
+        // header rows
+        opened_tag = false;
+        for i in 0..tokens.len() {
+            if tokens.get(i).unwrap() == HROW && i < tokens.len()-2 {
+                result_tokens[i] = "<tr>".to_string();
+                opened_tag = true;
+
+                let elements: Vec<String> = tokens[i+2].split(delimiter)
+                    .map(|el| el.to_string()).collect();
+
+                let mut row = String::new();
+                for e in elements.iter() {
+                    row.push_str(format!("<th>{}</th>", e).as_str());
+                }
+                result_tokens[i+2] = row;
+            }
+            else if tokens.get(i).unwrap() == "\n" && opened_tag {
+                result_tokens[i] = "</tr>".to_string();
+                opened_tag = false;
+            }
+        }
+
+        // normal rows
+        opened_tag = false;
+        for i in 0..tokens.len() {
+            if tokens.get(i).unwrap() == ROW && i < tokens.len()-2 {
+                result_tokens[i] = "<tr>".to_string();
+                opened_tag = true;
+
+                let elements: Vec<String> = tokens[i+2].split(delimiter)
+                    .map(|el| el.to_string()).collect();
+
+                let mut row = String::new();
+                for e in elements.iter() {
+                    row.push_str(format!("<td>{}</td>", e).as_str());
+                }
+                result_tokens[i+2] = row;
+            }
+            else if tokens.get(i).unwrap() == "\n" && opened_tag {
+                result_tokens[i] = "</tr>".to_string();
+                opened_tag = false;
+            }
+        }
+
+        return result_tokens;
+    }
+
+    /// generate css styling for html tables
+    fn generate_table_style() -> String {
+        let style_string = "
+        <style>
+            table, th, td {
+                border: 1px solid black;
+                border-collapse: collapse;
+                padding: 4px;
+            }
+        </style>";
+
+        return style_string.to_owned();
+    }
+
 }
