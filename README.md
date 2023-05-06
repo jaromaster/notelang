@@ -26,3 +26,6 @@
 
 ### images
 `.img Image.png`
+
+### hyperlinks
+`.link https://some-other/page.html`

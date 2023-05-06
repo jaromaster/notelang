@@ -4,6 +4,7 @@ pub mod transpile {
     const HEADLINE: &str = ".h"; // -> <h1>
     const TEXT: &str = ".p"; // -> <p>
     const IMAGE: &str = ".img"; // -> <img>
+    const LINK: &str = ".link"; // -> <a href="...">
 
     // notelang inline tags
     const BOLD: &str = "*"; // -> <strong>
@@ -23,6 +24,9 @@ pub mod transpile {
 
         // .img
         result_vec = transpile_image(&result_vec);
+
+        // .link
+        result_vec = transpile_hyperlink(&result_vec);
 
         // inline tags
         result_vec = transpile_bold(&result_vec); // * (bold)
@@ -175,6 +179,25 @@ pub mod transpile {
 
         if count != 0 {
             panic!("invalid number of mark tags!");
+        }
+
+        return result_tokens;
+    }
+
+    /// convert link tags to a (href) html tag
+    fn transpile_hyperlink(tokens: &Vec<String>) -> Vec<String> {
+        let mut result_tokens = tokens.to_owned();
+
+        let mut opened_tag = false;
+        for i in 0..tokens.len() {
+            if tokens.get(i).unwrap() == LINK {
+                result_tokens[i] = format!("<a href=\"{}\">", tokens[i+2]);
+                opened_tag = true;
+            }
+            else if tokens.get(i).unwrap() == "\n" && opened_tag {
+                result_tokens[i] = "</a>".to_string();
+                opened_tag = false;
+            }
         }
 
         return result_tokens;
