@@ -1,25 +1,37 @@
 pub mod html_structure {
 
+    const UNNAMED_FILE: &str = "Unnamed Note"; // default title
+
     /// build html structure around (html) content after transpiling
     pub fn build_html_structure(result_vec: &Vec<String>) -> Vec<String> {
         let mut result_vec = result_vec.to_owned();
 
+        // doctype
         result_vec.insert(0, "<!DOCTYPE html><html>".to_string());
-        result_vec.insert(1, "<head>".to_string());
-        // TODO maybe add title
-        result_vec.insert(2, generate_table_style());
-        result_vec.insert(3,"</head>".to_string());
-        result_vec.insert(4, "<body>".to_string());
+        
+        // head
+        result_vec.insert(1, generate_head(UNNAMED_FILE));
+
+        // body
+        result_vec.insert(2, "<body>".to_string());
         result_vec.push("</body>".to_string());
         result_vec.push("</html>".to_string());
 
         return result_vec.to_owned();
     }
 
+    /// generate html head containing style and title
+    fn generate_head(title: &str) -> String {
+        let head = format!("<head><title>{}</title><style>{}</style></head>", 
+            title, 
+            generate_table_style());
+
+        return head.to_owned();
+    }
+
     /// generate css styling for html tables
     fn generate_table_style() -> String {
         let style_string = "
-        <style>
             table, th, td {
                 border: 1px solid black;
                 border-collapse: collapse;
@@ -27,8 +39,7 @@ pub mod html_structure {
             }
             th {
                 background-color: lightgrey;
-            }
-        </style>";
+            }";
 
         return style_string.to_owned();
     }
