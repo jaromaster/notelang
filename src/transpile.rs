@@ -1,4 +1,6 @@
 pub mod transpile {
+    use crate::html_structure::html_structure::{build_html_structure};
+
 
     // notelang tags
     const HEADLINE: &str = ".h"; // -> <h1>
@@ -39,16 +41,8 @@ pub mod transpile {
         result_vec = transpile_italic(&result_vec); // # (italic)
         result_vec = transpile_mark(&result_vec); // _ (mark)
 
-        // define html structure
-        // TODO move to function
-        result_vec.insert(0, "<!DOCTYPE html><html>".to_string());
-        result_vec.insert(1, "<head>".to_string());
-        // TODO maybe add title
-        result_vec.insert(2, generate_table_style());
-        result_vec.insert(3,"</head>".to_string());
-        result_vec.insert(4, "<body>".to_string());
-        result_vec.push("</body>".to_string());
-        result_vec.push("</html>".to_string());
+        // define html structure (<html>, <head>, <body>, ...)
+        result_vec = build_html_structure(&result_vec);
 
         return result_vec;
     }
@@ -278,20 +272,6 @@ pub mod transpile {
         }
 
         return result_tokens;
-    }
-
-    /// generate css styling for html tables
-    fn generate_table_style() -> String {
-        let style_string = "
-        <style>
-            table, th, td {
-                border: 1px solid black;
-                border-collapse: collapse;
-                padding: 4px;
-            }
-        </style>";
-
-        return style_string.to_owned();
     }
 
 }

@@ -5,6 +5,7 @@ use tokenise::tokenise::tokenise;
 pub mod tokenise;
 pub mod fileinput;
 pub mod transpile;
+pub mod html_structure;
 
 fn main() {
     let file_name = args().nth(1).expect("invalid file name");
