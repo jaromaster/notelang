@@ -1,5 +1,5 @@
 pub mod transpile {
-    use crate::html_structure::html_structure::{build_html_structure};
+    use crate::html_structure::html_structure::build_html_structure;
 
 
     // notelang tags
@@ -18,7 +18,7 @@ pub mod transpile {
 
 
     /// transpile token-vector into valid html (as string-vec)
-    pub fn transpile(tokens: Vec<String>) -> Vec<String> {
+    pub fn transpile(tokens: Vec<String>, file_name: &str) -> Vec<String> {
         let mut result_vec = tokens.to_vec();
  
         // .h
@@ -42,7 +42,7 @@ pub mod transpile {
         result_vec = transpile_mark(&result_vec); // _ (mark)
 
         // define html structure (<html>, <head>, <body>, ...)
-        result_vec = build_html_structure(&result_vec);
+        result_vec = build_html_structure(&result_vec, file_name);
 
         return result_vec;
     }

@@ -13,12 +13,14 @@ fn main() {
     // read in file
     let lines = fileinput::fileinput::read_file(&file_name);
     let tokens = tokenise(lines);
+    let (file_name, _) = file_name.split_once(".").unwrap();
 
     // transpile
-    let result_string = transpile::transpile::transpile(tokens);
+    let result_string = transpile::transpile::transpile(tokens, &file_name);
 
     // println!("{:?}", result_string);
 
     // write to html
-    fs::write("out.html", result_string.join("")).expect("cannot write to out.html");
+    let out_file = format!("{}.html", file_name);
+    fs::write(out_file, result_string.join("")).expect("cannot write to html file");
 }
