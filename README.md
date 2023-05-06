@@ -4,7 +4,7 @@
 ## Usage
 ---
 `notelang myfile.ntlang` <br>
-(generates `out.html`)
+(generates `myfile.html`)
 
 ## Basic tags
 ---
